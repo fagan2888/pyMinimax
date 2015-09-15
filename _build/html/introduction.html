@@ -1,0 +1,151 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Minimax Inference for Linear Systems &mdash; pyMinimax 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="pyMinimax 0.0.1 documentation" href="index.html" />
+    <link rel="next" title="Tutorial on Minimax filters using pyMinimax" href="tutorial.html" />
+    <link rel="prev" title="Welcome to pyMinimax’s documentation!" href="index.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="minimax-inference-for-linear-systems">
+<h1>Minimax Inference for Linear Systems<a class="headerlink" href="#minimax-inference-for-linear-systems" title="Permalink to this headline">¶</a></h1>
+<p>This module implements the minimax filter as described by <a class="reference internal" href="#simon2006" id="id1">[Simon2006]</a>.
+Eventually, this module should very soon also implement the Linear Exponential Quadratic
+Filters as they were exposed by <a class="reference internal" href="#whittle1996" id="id2">[Whittle1996]</a>.</p>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p>This module implements filters that solve the following system of equation using a minimax strategy</p>
+<div class="math">
+\[\begin{split}\mathbf{x}_{k+1} &amp;= \mathbf{F}_k \mathbf{x}_k + \mathbf{c}_k + \boldsymbol\nu_k \\
+\mathbf{z}_k &amp;= \mathbf{H}_k \mathbf{x}_k + \mathbf{d}_k + \boldsymbol\eta_k \\
+\mathbf{y}_k &amp;= \mathbf{L}_k \mathbf{x}_k\end{split}\]</div>
+<p>where <span class="math">\(\nu_k\)</span> and <span class="math">\(\eta_k\)</span> are noise terms (of possibly unknown densities), and our goal is to estimate <span class="math">\(y_k\)</span>.</p>
+<p>The cost function to solve the problem above is given as:</p>
+<div class="math">
+\[J_1 = \frac{\sum_{k=0}^{N-1} || \mathbf{z}_k - \hat{\mathbf{z}}_k||^2_{\mathbf{R}_k}}{||x_0
+    - \hat{x}_0||^2_{\mathbf{P}_0^{-1}}
+    + \sum_{k=0}^{N-1}( ||\nu_k||^2_{\mathbf{Q}_k^{-1}} + ||\eta_k||^2_{\mathbf{S}_k^{-1}})}\]</div>
+<p>The cost function can be made to be less than <span class="math">\(\frac{1}{2\gamma}\)</span>
+(a user-specified bound) with a <span class="math">\(H_\infty\)</span> or minimax filter.</p>
+</div>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<table class="docutils citation" frame="void" id="simon2006" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[Simon2006]</td><td><em>(<a class="fn-backref" href="#id1">1</a>, <a class="fn-backref" href="#id3">2</a>)</em> Simon, Dan. 2006. Optimal State Estimation. Wiley-Interscience.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="whittle1996" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id2">[Whittle1996]</a></td><td>Whittle, Peter. 1996. Optimal Control: Basics and Beyond. 1st ed. Series in Systems and Optimization. Wiley-Interscience.</td></tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Notations are the similar to the ones in my PhD dissertation, and correspond mostly to notations used by <a class="reference internal" href="#simon2006" id="id3">[Simon2006]</a></p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Inspiration for the structure of this module was taken from the <code class="docutils literal"><span class="pre">pykalman</span></code> module.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Minimax Inference for Linear Systems</a><ul>
+<li><a class="reference internal" href="#description">Description</a></li>
+<li><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Welcome to pyMinimax&#8217;s documentation!</a></li>
+      <li>Next: <a href="tutorial.html" title="next chapter">Tutorial on Minimax filters using <code class="docutils literal"><span class="pre">pyMinimax</span></code></a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/introduction.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2015, Guillaume Weisang.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.6</a>
+      
+      |
+      <a href="_sources/introduction.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

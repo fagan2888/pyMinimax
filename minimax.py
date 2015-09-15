@@ -353,7 +353,7 @@ class HinfFilter(object):
             except linalg.LinAlgError:
                 warn_str = 'SVD Calculation did not converge.'
                 warnings.warn(warn_str)
-                raise
+                raise ValueError(warn_str) from linalg.LinAlgError
 
         # Inverting previous pseudo state covariance
         try:
@@ -366,41 +366,38 @@ class HinfFilter(object):
             except linalg.LinAlgError:
                 warn_str = 'SVD Calculation did not converge.'
                 warnings.warn(warn_str)
-                raise
+                raise ValueError(warn_str) from linalg.LinAlgError
 
         # Testing the condition of existence of a solution
+        filtered_state_covariance_tilde = inv_state_covariance - minimax_bound * projected_precision + \
+                                          np.dot(np.dot(observation_matrix.T, inv_observation_covariance),
+                                                 observation_matrix
+                                                 )
         try:
-            filtered_state_covariance_tilde = linalg.inv(inv_state_covariance -
-                                                         minimax_bound * projected_precision +
-                                                         np.dot(np.dot(np.transpose(observation_matrix),
-                                                                       inv_observation_covariance),
-                                                                observation_matrix
-                                                                )
-                                                         )
+            filtered_state_covariance_tilde_inv = linalg.inv(filtered_state_covariance_tilde)
         except linalg.LinAlgError:
+            minimax_cond = True
             warn_str = (
-            'Condition of existence of minimax solution failed for minimax bound = {0}. ' \
-            + 'Moving to Moore-Penrose pseudo inverse to calculate the \\tilde{P}\\_k component of minimax gain'
-                        ).format(minimax_bound)
+            'Condition of existence of minimax solution failed for minimax bound = {0}. ' ).format(minimax_bound)
             warnings.warn(warn_str)
-            try:
-                filtered_state_covariance_tilde = linalg.pinv(inv_state_covariance -
-                                                              minimax_bound * projected_precision +
-                                                              np.dot(np.dot(np.transpose(observation_matrix),
-                                                                            inv_observation_covariance),
-                                                                     observation_matrix
-                                                                     )
-                                                              )
-            except linalg.LinAlgError:
-                warn_str = 'SVD Calculation did not converge.'
-                warnings.warn(warn_str)
-                raise ValueError(warn_str) from linalg.LinAlgError
-            finally:
-                minimax_cond = True
+            # try:
+            #     filtered_state_covariance_tilde = linalg.pinv(inv_state_covariance -
+            #                                                   minimax_bound * projected_precision +
+            #                                                   np.dot(np.dot(observation_matrix.T,
+            #                                                                 inv_observation_covariance),
+            #                                                          observation_matrix
+            #                                                          )
+            #                                                   )
+            # except linalg.LinAlgError:
+            #     warn_str = 'SVD Calculation did not converge.'
+            #     warnings.warn(warn_str)
+            #     raise ValueError(warn_str) from linalg.LinAlgError
+            # finally:
+            #     minimax_cond = True
 
         # Calculating the Minimax gain
-        minimax_gain = np.dot(np.dot(filtered_state_covariance_tilde, np.transpose(observation_matrix)),
-                              observation_covariance)
+        minimax_gain = np.dot(np.dot(filtered_state_covariance_tilde, observation_matrix.T),
+                              inv_observation_covariance)
 
         # Calculating the innovation
         minimax_innovation = observation - np.dot(observation_matrix,
@@ -414,7 +411,7 @@ class HinfFilter(object):
 
         # Calculating the new filtered_state_pseudo_covariance
         filtered_state_covariance = np.dot(np.dot(transition_matrix, filtered_state_covariance_tilde),
-                                           np.transpose(transition_matrix)) + transition_covariance
+                                           transition_matrix.T) + transition_covariance
         # Calculating the new projection_estimate
         projection_estimate = np.dot(projection_matrix, filtered_state_mean)
 
